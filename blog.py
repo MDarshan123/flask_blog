@@ -4,12 +4,14 @@ from flask_mail import Mail
 from datetime import datetime
 import json
 import os
+import CORS
 from werkzeug.utils import secure_filename
 
 local_server=True
 with open('config.json','r') as c:
     params=json.load(c)["params"]
 app=Flask(__name__)
+app=Flask(CORS)
 app.secret_key='super_secreat_key' 
 app.config['UPLOAD_FOLDER']=params["upload_loc"]
 app.config.update(
@@ -27,15 +29,6 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI']=params['prod_uri']
 
 db=SQLAlchemy(app)
-
-# @app.route("/")
-# def hello():
-#     return "Hello world"
-
-# @app.route("/Ds")
-# def ds():
-#     return "Hello Darshan23"
-
 
 class Contacts(db.Model):
     sno=db.Column(db.Integer,primary_key=True)
@@ -157,7 +150,9 @@ def delete(sno):
          post=Posts.query.filter_by(sno=sno).first()
          db.session.delete(post)
          db.session.commit()
+        else:
+            print("no data find")
      return redirect('/dashboard')
 
 
-app.run(debug=True)
+app.run()
